@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bài giảng 10/11/2026</title>
+  <meta name="description" content="Bài toán tìm số tự nhiên khi biết số dư — vận dụng bội chung nhỏ nhất">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --text: #2b2b2b;
+      --muted: #6b6b6b;
+      --accent: #a0522d;
+      --card: #ffffff;
+      --border: #e8e2da;
+      --method-bg: #fdf3ea;
+      --answer-bg: #f3f7f0;
+      --answer-accent: #4a7a3a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1918;
+        --text: #ece8e3;
+        --muted: #a39e98;
+        --accent: #e0956a;
+        --card: #242220;
+        --border: #3a3633;
+        --method-bg: #2e241d;
+        --answer-bg: #1f2a1c;
+        --answer-accent: #9cc98a;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .wrap { max-width: 800px; margin: 0 auto; padding: 0 16px; }
+    a { color: var(--accent); }
+    .back { display: inline-block; margin-top: 24px; font-size: 0.9rem; text-decoration: none; }
+    .back:hover { text-decoration: underline; }
+    header { padding: 24px 0 24px; }
+    .date { color: var(--muted); font-size: 0.95rem; }
+    h1 { font-size: 2rem; line-height: 1.3; color: var(--accent); margin: 4px 0 8px; }
+    .lead { color: var(--muted); }
+    nav.toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+    }
+    nav.toc strong { display: block; margin-bottom: 4px; }
+    nav.toc ol { padding-left: 20px; }
+    h2 {
+      font-size: 1.5rem;
+      margin: 48px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--accent);
+    }
+    h3 { font-size: 1.15rem; margin-bottom: 8px; }
+    p { margin: 8px 0; }
+    ul { padding-left: 24px; margin: 8px 0; }
+    .method {
+      background: var(--method-bg);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      padding: 16px 20px;
+      margin: 16px 0 24px;
+    }
+    .method .label { font-weight: 700; color: var(--accent); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .problem { font-weight: 500; }
+    .sol-title { font-weight: 700; margin-top: 12px; }
+    .result {
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--method-bg);
+    }
+    details {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--answer-bg);
+    }
+    summary {
+      cursor: pointer;
+      padding: 8px 12px;
+      font-weight: 600;
+      color: var(--answer-accent);
+    }
+    details > div { padding: 0 16px 12px; }
+    .ex-group { color: var(--muted); font-size: 0.95rem; margin: 24px 0 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
+    footer { text-align: center; color: var(--muted); font-size: 0.875rem; padding: 48px 0 32px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">&larr; Về trang chủ</a>
+
+  <header>
+    <p class="date">Bài giảng ngày 10/11/2026</p>
+    <h1>Tìm số tự nhiên khi biết số dư — vận dụng BCNN</h1>
+    <p class="lead">Ba dạng toán thường gặp: số dư bằng nhau, số dư khác nhau (nhân thêm hệ số), và tìm nghiệm riêng / phần bù chung.</p>
+  </header>
+
+  <nav class="toc">
+    <strong>Nội dung</strong>
+    <ol>
+      <li><a href="#phan-1">Phần 1: Các phép chia có cùng số dư</a></li>
+      <li><a href="#phan-2">Phần 2: Số dư khác nhau — nhân thêm hệ số</a></li>
+      <li><a href="#phan-3">Phần 3: Tìm nghiệm riêng và phần bù chung</a></li>
+      <li><a href="#bai-tap">Bài tập luyện tập (9 bài)</a></li>
+    </ol>
+  </nav>
+
+  <!-- ================= PHẦN 1 ================= -->
+  <h2 id="phan-1">Phần 1: Các phép chia có cùng số dư</h2>
+
+  <div class="method">
+    <p class="label">Phương pháp</p>
+    <p>Nếu $x$ chia cho $a$, $b$, $c$ đều dư $r$ thì $(x - r)$ chia hết cho cả $a$, $b$, $c$:</p>
+    $$x - r \in \text{BC}(a, b, c)$$
+    <p>Nếu đề bài yêu cầu $x$ nhỏ nhất (với $x > r$) thì $x - r = \text{BCNN}(a, b, c)$, suy ra $x = \text{BCNN}(a, b, c) + r$.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 1: Chia cho các số nguyên tố cùng nhau</h3>
+    <p class="problem">Tìm số tự nhiên nhỏ nhất (lớn hơn 2) sao cho khi chia cho 3, 4, 5 đều có số dư là 2.</p>
+    <p class="sol-title">Lời giải</p>
+    <p>Gọi số tự nhiên cần tìm là $x$ ($x \in \mathbb{N},\ x > 2$).</p>
+    <p>Vì $x$ chia cho 3, 4, 5 đều dư 2 nên $(x - 2) \ \vdots \ 3$, $(x - 2) \ \vdots \ 4$, $(x - 2) \ \vdots \ 5$.</p>
+    <p>Suy ra $x - 2 \in \text{BC}(3, 4, 5)$. Vì $x$ nhỏ nhất (khác 2) nên $x - 2 = \text{BCNN}(3, 4, 5)$.</p>
+    <p>Ta có $3 = 3$, $4 = 2^2$, $5 = 5$ $\Rightarrow \text{BCNN}(3, 4, 5) = 2^2 \cdot 3 \cdot 5 = 60$.</p>
+    $$x - 2 = 60 \Rightarrow x = 62$$
+    <p class="result">Vậy số cần tìm là <strong>62</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 2: Chia cho các hợp số có thừa số nguyên tố chung</h3>
+    <p class="problem">Tìm số tự nhiên nhỏ nhất (lớn hơn 5) sao cho khi chia cho 6, 8, 10 đều dư 5.</p>
+    <p class="sol-title">Lời giải</p>
+    <p>Gọi số cần tìm là $x$ ($x \in \mathbb{N},\ x > 5$).</p>
+    <p>Theo đề bài: $(x - 5) \ \vdots \ 6$, $(x - 5) \ \vdots \ 8$, $(x - 5) \ \vdots \ 10$, do đó $(x - 5) \in \text{BC}(6, 8, 10)$.</p>
+    <p>Vì $x$ nhỏ nhất lớn hơn 5 nên $x - 5 = \text{BCNN}(6, 8, 10)$.</p>
+    <p>Ta có $6 = 2 \cdot 3$, $8 = 2^3$, $10 = 2 \cdot 5$ $\Rightarrow \text{BCNN}(6, 8, 10) = 2^3 \cdot 3 \cdot 5 = 120$.</p>
+    $$x - 5 = 120 \Rightarrow x = 125$$
+    <p class="result">Vậy số cần tìm là <strong>125</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 3: Toán có lời văn (Đề thi học kì I)</h3>
+    <p class="problem">Một khối học sinh khi xếp thành hàng 12, hàng 15, hàng 18 đều thừa ra 4 học sinh. Biết số học sinh của khối là ít nhất có thể (lớn hơn 4 em). Hãy tính số học sinh của khối đó.</p>
+    <p class="sol-title">Lời giải</p>
+    <p>Gọi số học sinh của khối là $x$ (học sinh, $x \in \mathbb{N}^*,\ x > 4$).</p>
+    <p>Xếp hàng 12, 15, 18 đều dư 4 em nên $(x - 4) \ \vdots \ 12$, $(x - 4) \ \vdots \ 15$, $(x - 4) \ \vdots \ 18$.</p>
+    <p>Suy ra $(x - 4) \in \text{BC}(12, 15, 18)$. Vì số học sinh ít nhất có thể nên $x - 4 = \text{BCNN}(12, 15, 18)$.</p>
+    <p>Ta có $12 = 2^2 \cdot 3$, $15 = 3 \cdot 5$, $18 = 2 \cdot 3^2$ $\Rightarrow \text{BCNN}(12, 15, 18) = 2^2 \cdot 3^2 \cdot 5 = 180$.</p>
+    $$x - 4 = 180 \Rightarrow x = 184$$
+    <p class="result">Vậy khối đó có <strong>184</strong> học sinh.</p>
+  </div>
+
+  <!-- ================= PHẦN 2 ================= -->
+  <h2 id="phan-2">Phần 2: Số dư khác nhau — nhân thêm hệ số</h2>
+
+  <div class="method">
+    <p class="label">Phương pháp (quy tắc chung)</p>
+    <p>Khi các số dư khác nhau, ta tìm hệ số nhân $k$ (thường thử $k = 2, 3, 4, \dots$). Nếu $x$ chia $m$ dư $r$ thì $kx$ chia $m$ có cùng số dư với tích $k \cdot r$.</p>
+    <p>Ta chọn $k$ sao cho tất cả các số dư mới đều bằng cùng một số $d$ (thường chọn $d = 1$). Khi đó:</p>
+    $$kx - d \in \text{BC}(\text{các số chia})$$
+    <p>Để $x$ nhỏ nhất thì $kx - d = \text{BCNN}$, rồi tìm $x$.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 1: Nhân hệ số 2 (bộ số 3, 5, 11)</h3>
+    <p class="problem">Tìm số tự nhiên $x$ nhỏ nhất biết rằng khi chia $x$ cho 3 thì dư 2, chia cho 5 thì dư 3 và chia cho 11 thì dư 6.</p>
+    <p class="sol-title">Lời giải</p>
+    <ul>
+      <li>$x$ chia 3 dư 2 $\Rightarrow 2x$ chia 3 có số dư như $2 \times 2 = 4$, mà 4 chia 3 dư 1 nên $2x$ chia 3 dư 1.</li>
+      <li>$x$ chia 5 dư 3 $\Rightarrow 2x$ chia 5 có số dư như $2 \times 3 = 6$, mà 6 chia 5 dư 1 nên $2x$ chia 5 dư 1.</li>
+      <li>$x$ chia 11 dư 6 $\Rightarrow 2x$ chia 11 có số dư như $2 \times 6 = 12$, mà 12 chia 11 dư 1 nên $2x$ chia 11 dư 1.</li>
+    </ul>
+    <p>Suy ra $2x - 1 \in \text{BC}(3, 5, 11)$. Để $x$ nhỏ nhất thì $2x - 1 = \text{BCNN}(3, 5, 11)$.</p>
+    <p>Vì 3, 5, 11 đôi một nguyên tố cùng nhau nên $\text{BCNN}(3, 5, 11) = 3 \times 5 \times 11 = 165$.</p>
+    $$2x - 1 = 165 \Rightarrow 2x = 166 \Rightarrow x = 83$$
+    <p class="result">Vậy số cần tìm là <strong>83</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 2: Nhân hệ số 3 (bộ số 4, 5, 7)</h3>
+    <p class="problem">Tìm số tự nhiên $x$ nhỏ nhất biết rằng khi chia $x$ cho 4 thì dư 3, chia cho 5 thì dư 2 và chia cho 7 thì dư 5.</p>
+    <p class="sol-title">Lời giải</p>
+    <ul>
+      <li>$x$ chia 4 dư 3 $\Rightarrow 3x$ chia 4 có số dư như $3 \times 3 = 9$, mà 9 chia 4 dư 1 nên $3x$ chia 4 dư 1.</li>
+      <li>$x$ chia 5 dư 2 $\Rightarrow 3x$ chia 5 có số dư như $3 \times 2 = 6$, mà 6 chia 5 dư 1 nên $3x$ chia 5 dư 1.</li>
+      <li>$x$ chia 7 dư 5 $\Rightarrow 3x$ chia 7 có số dư như $3 \times 5 = 15$, mà 15 chia 7 dư 1 nên $3x$ chia 7 dư 1.</li>
+    </ul>
+    <p>Suy ra $3x - 1 \in \text{BC}(4, 5, 7)$. Để $x$ nhỏ nhất thì $3x - 1 = \text{BCNN}(4, 5, 7) = 4 \times 5 \times 7 = 140$.</p>
+    $$3x - 1 = 140 \Rightarrow 3x = 141 \Rightarrow x = 47$$
+    <p class="result">Vậy số cần tìm là <strong>47</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 3: Nhân hệ số 2 (bộ số 5, 7, 9)</h3>
+    <p class="problem">Tìm số tự nhiên $x$ nhỏ nhất biết rằng khi chia $x$ cho 5 thì dư 3, chia cho 7 thì dư 4 và chia cho 9 thì dư 5.</p>
+    <p class="sol-title">Lời giải</p>
+    <ul>
+      <li>$x$ chia 5 dư 3 $\Rightarrow 2x$ chia 5 có số dư như $2 \times 3 = 6$, mà 6 chia 5 dư 1 nên $2x$ chia 5 dư 1.</li>
+      <li>$x$ chia 7 dư 4 $\Rightarrow 2x$ chia 7 có số dư như $2 \times 4 = 8$, mà 8 chia 7 dư 1 nên $2x$ chia 7 dư 1.</li>
+      <li>$x$ chia 9 dư 5 $\Rightarrow 2x$ chia 9 có số dư như $2 \times 5 = 10$, mà 10 chia 9 dư 1 nên $2x$ chia 9 dư 1.</li>
+    </ul>
+    <p>Suy ra $2x - 1 \in \text{BC}(5, 7, 9)$. Để $x$ nhỏ nhất thì $2x - 1 = \text{BCNN}(5, 7, 9)$.</p>
+    <p>Vì 5, 7, 9 đôi một nguyên tố cùng nhau nên $\text{BCNN}(5, 7, 9) = 5 \times 7 \times 9 = 315$.</p>
+    $$2x - 1 = 315 \Rightarrow 2x = 316 \Rightarrow x = 158$$
+    <p class="result">Vậy số cần tìm là <strong>158</strong>.</p>
+  </div>
+
+  <!-- ================= PHẦN 3 ================= -->
+  <h2 id="phan-3">Phần 3: Tìm nghiệm riêng và phần bù chung</h2>
+
+  <div class="method">
+    <p class="label">Phương pháp</p>
+    <p><strong>Cách 1 — Tìm nghiệm riêng $k$:</strong> Liệt kê các số chia cho số chia lớn hơn có số dư đúng như đề bài, rồi kiểm tra lần lượt với số chia còn lại để tìm số $k$ thỏa mãn tất cả điều kiện. Khi đó:</p>
+    $$x - k \in \text{BC} \Rightarrow x = \text{BCNN} \cdot m + k \quad (m \in \mathbb{N})$$
+    <p><strong>Cách 2 — Tìm phần bù $k$:</strong> Tìm số $k$ sao cho <em>số dư + $k$</em> chia hết cho số chia ở mọi phép chia (liệt kê các giá trị $k$ theo số chia lớn nhất rồi kiểm tra lần lượt). Đặc biệt, nếu <em>số chia − số dư</em> ở mọi phép chia đều bằng nhau thì $k$ chính là hiệu đó, không cần thử. Khi đó:</p>
+    $$x + k \in \text{BC} \Rightarrow x = \text{BCNN} \cdot t - k \quad (t \in \mathbb{N}^*)$$
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 1: Tìm $k$ để $(x - k)$ hoặc $(x + k)$ là bội chung</h3>
+    <p class="problem">Tìm các số tự nhiên $x$ biết rằng khi chia $x$ cho 5 thì dư 3, còn chia cho 7 thì dư 4.</p>
+    <p class="sol-title">Cách 1: Tìm $k$ để $x - k$ là bội chung (nghiệm riêng)</p>
+    <p>Dãy các số chia cho 7 dư 4 là: $4,\ 11,\ \mathbf{18},\ 25, \dots$</p>
+    <ul>
+      <li>4 chia 5 dư 4 (loại)</li>
+      <li>11 chia 5 dư 1 (loại)</li>
+      <li>$18 = 5 \times 3 + 3$ (thỏa mãn chia 5 dư 3)</li>
+    </ul>
+    <p>Vậy $k = 18$ đồng thời chia 5 dư 3 và chia 7 dư 4, do đó $(x - 18) \in \text{BC}(5, 7)$.</p>
+    <p>Vì $\text{ƯCLN}(5, 7) = 1$ nên $\text{BCNN}(5, 7) = 5 \times 7 = 35$.</p>
+    $$x - 18 = 35m \Rightarrow x = 35m + 18 \quad (m \in \mathbb{N})$$
+    <p class="sol-title">Cách 2: Tìm $k$ để $x + k$ là bội chung (phần bù)</p>
+    <p>Ta cần tìm số $k$ sao cho khi cộng $k$ vào $x$ thì được số chia hết cho cả 5 và 7. Muốn vậy, <em>số dư cộng $k$</em> phải chia hết cho số chia:</p>
+    <ul>
+      <li>Để $(x + k) \ \vdots \ 7$ thì $(4 + k) \ \vdots \ 7$, nên $k \in \{3;\ 10;\ \mathbf{17};\ 24;\ \dots\}$ (cứ thêm 7).</li>
+      <li>Kiểm tra từng giá trị với điều kiện $(3 + k) \ \vdots \ 5$:
+        <ul>
+          <li>$k = 3$: $3 + 3 = 6$, không chia hết cho 5 (loại)</li>
+          <li>$k = 10$: $3 + 10 = 13$, không chia hết cho 5 (loại)</li>
+          <li>$k = 17$: $3 + 17 = 20 \ \vdots \ 5$ (thỏa mãn)</li>
+        </ul>
+      </li>
+    </ul>
+    <p>Vậy $k = 17$: $(x + 17) \ \vdots \ 5$ và $(x + 17) \ \vdots \ 7$, suy ra $(x + 17) \in \text{BC}(5, 7)$.</p>
+    $$x + 17 = 35t \Rightarrow x = 35t - 17 \quad (t \in \mathbb{N}^*)$$
+    <p>(Tương đương $x = 35(t - 1) + 18 = 35m + 18$ với $m \in \mathbb{N}$.)</p>
+    <p class="result">Vậy $x = 35m + 18$ với $m \in \mathbb{N}$ (số nhỏ nhất là <strong>18</strong>).</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 2: Tìm nghiệm riêng qua phép liệt kê số dư</h3>
+    <p class="problem">Tìm các số tự nhiên $x$ biết rằng khi chia $x$ cho 4 thì dư 3, còn chia cho 9 thì dư 5.</p>
+    <p class="sol-title">Lời giải</p>
+    <p>Dãy các số chia cho 9 dư 5 là: $5,\ 14,\ \mathbf{23},\ 32,\ 41, \dots$</p>
+    <ul>
+      <li>5 chia 4 dư 1 (loại)</li>
+      <li>14 chia 4 dư 2 (loại)</li>
+      <li>$23 = 4 \times 5 + 3$ (thỏa mãn chia 4 dư 3)</li>
+    </ul>
+    <p>Chọn $k = 23$, khi đó $(x - 23) \in \text{BC}(4, 9)$.</p>
+    <p>Vì $\text{ƯCLN}(4, 9) = 1$ nên $\text{BCNN}(4, 9) = 4 \times 9 = 36$.</p>
+    $$x - 23 = 36m \Rightarrow x = 36m + 23 \quad (m \in \mathbb{N})$$
+    <p><em>Cách khác (tìm phần bù):</em> để $(x + k) \ \vdots \ 9$ thì $(5 + k) \ \vdots \ 9$, nên $k \in \{4;\ \mathbf{13};\ 22;\ \dots\}$. Thử $k = 4$: $3 + 4 = 7$, không chia hết cho 4 (loại). Thử $k = 13$: $3 + 13 = 16 \ \vdots \ 4$ (thỏa mãn). Vậy $(x + 13) \in \text{BC}(4, 9)$, suy ra $x = 36t - 13$ $(t \in \mathbb{N}^*)$, cũng chính là $x = 36m + 23$.</p>
+    <p class="result">Vậy $x = 36m + 23$ với $m \in \mathbb{N}$ (số nhỏ nhất là <strong>23</strong>).</p>
+  </div>
+
+  <div class="card">
+    <h3>Ví dụ 3: Hệ ba số chia có chung phần bù $(x + k)$</h3>
+    <p class="problem">Tìm số tự nhiên $x$ nhỏ nhất biết rằng khi chia $x$ cho 5 thì dư 1, chia cho 7 thì dư 3 và chia cho 8 thì dư 4.</p>
+    <p class="sol-title">Lời giải</p>
+    <ul>
+      <li>$x$ chia 5 dư 1 $\Rightarrow x$ thiếu 4 đơn vị để chia hết cho 5, tức $(x + 4) \ \vdots \ 5$ (do $1 + 4 = 5$).</li>
+      <li>$x$ chia 7 dư 3 $\Rightarrow x$ thiếu 4 đơn vị để chia hết cho 7, tức $(x + 4) \ \vdots \ 7$ (do $3 + 4 = 7$).</li>
+      <li>$x$ chia 8 dư 4 $\Rightarrow x$ thiếu 4 đơn vị để chia hết cho 8, tức $(x + 4) \ \vdots \ 8$ (do $4 + 4 = 8$).</li>
+    </ul>
+    <p>Chọn được phần bù chung $k = 4$, suy ra $(x + 4) \in \text{BC}(5, 7, 8)$. Để $x$ nhỏ nhất thì $x + 4 = \text{BCNN}(5, 7, 8)$.</p>
+    <p>Vì 5, 7, 8 đôi một nguyên tố cùng nhau nên $\text{BCNN}(5, 7, 8) = 5 \times 7 \times 8 = 280$.</p>
+    $$x + 4 = 280 \Rightarrow x = 276$$
+    <p class="result">Vậy số cần tìm là <strong>276</strong>.</p>
+  </div>
+
+  <!-- ================= BÀI TẬP ================= -->
+  <h2 id="bai-tap">Bài tập luyện tập</h2>
+  <p>Hãy tự giải. Nếu bí, bấm <em>“Xem gợi ý”</em>.</p>
+
+  <p class="ex-group">Phần 1 — Cùng số dư</p>
+
+  <div class="card">
+    <h3>Bài 1</h3>
+    <p class="problem">Tìm số tự nhiên nhỏ nhất (lớn hơn 3) sao cho khi chia cho 4, 6, 9 đều dư 3.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Các phép chia đều dư 3, vậy hãy xét số $x - 3$. Nó có quan hệ gì với 4, 6, 9?</p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h3>Bài 2</h3>
+    <p class="problem">Tìm số tự nhiên nhỏ nhất (lớn hơn 1) sao cho khi chia cho 2, 3, 4, 5, 6 đều dư 1.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Xét $x - 1$. Khi tính BCNN của 5 số, chỉ cần lấy các thừa số nguyên tố với số mũ lớn nhất.</p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h3>Bài 3</h3>
+    <p class="problem">Số sách trong thư viện lớp khi xếp thành từng bó 10 quyển, 12 quyển hay 15 quyển đều thừa 3 quyển. Biết số sách trong khoảng từ 100 đến 150 quyển. Tính số sách đó.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Đề không hỏi số nhỏ nhất mà cho một khoảng. Hãy liệt kê các bội chung của 10, 12, 15 rồi chọn số phù hợp.</p></div>
+    </details>
+  </div>
+
+  <p class="ex-group">Phần 2 — Nhân thêm hệ số</p>
+
+  <div class="card">
+    <h3>Bài 4</h3>
+    <p class="problem">Tìm số tự nhiên $x$ nhỏ nhất biết rằng khi chia $x$ cho 3 thì dư 2, chia cho 5 thì dư 3 và chia cho 7 thì dư 4.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Thử nhân $x$ với 2 rồi xem $2x$ chia cho 3, 5, 7 dư bao nhiêu.</p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h3>Bài 5</h3>
+    <p class="problem">Tìm số tự nhiên $x$ nhỏ nhất biết rằng khi chia $x$ cho 5 thì dư 2, chia cho 8 thì dư 3 và chia cho 11 thì dư 4.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Thử $k = 2$ trước. Nếu các số dư mới chưa bằng nhau, thử tiếp $k = 3$.</p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h3>Bài 6</h3>
+    <p class="problem">Một trường tổ chức cho học sinh đi tham quan. Nếu xếp mỗi xe 7 em thì dư 4 em, mỗi xe 9 em thì dư 5 em, mỗi xe 11 em thì dư 6 em. Biết số học sinh ít hơn 1000. Tính số học sinh đi tham quan.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Giống Bài 4: nhân với một hệ số để đưa các số dư về cùng bằng 1. Đừng quên kiểm tra điều kiện ít hơn 1000.</p></div>
+    </details>
+  </div>
+
+  <p class="ex-group">Phần 3 — Nghiệm riêng và phần bù chung</p>
+
+  <div class="card">
+    <h3>Bài 7</h3>
+    <p class="problem">Tìm các số tự nhiên $x$ biết rằng khi chia $x$ cho 3 thì dư 2, còn chia cho 7 thì dư 3.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Liệt kê các số chia cho 7 dư 3, tìm số đầu tiên chia cho 3 dư 2.</p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h3>Bài 8</h3>
+    <p class="problem">Tìm các số tự nhiên $x$ biết rằng khi chia $x$ cho 8 thì dư 5, còn chia cho 5 thì dư 4.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>Liệt kê các số chia cho 8 dư 5 (số chia lớn hơn), rồi lần lượt kiểm tra với phép chia cho 5.</p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h3>Bài 9</h3>
+    <p class="problem">Số học sinh của một trường khi xếp hàng 12 thì dư 11 em, xếp hàng 18 thì dư 17 em, xếp hàng 21 thì dư 20 em. Biết số học sinh trong khoảng từ 600 đến 800. Tính số học sinh của trường.</p>
+    <details>
+      <summary>Xem gợi ý</summary>
+      <div><p>So sánh số chia với số dư ở mỗi cách xếp: trường còn thiếu bao nhiêu em để mọi hàng đều đủ?</p></div>
+    </details>
+  </div>
+
+  <footer>
+    <p><a href="./">&larr; Về trang chủ</a></p>
+    <p>&copy; 2026 Thiện Ý</p>
+  </footer>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ],
+      strict: false,
+      throwOnError: false
+    });
+  });
+</script>
+</body>
+</html>
